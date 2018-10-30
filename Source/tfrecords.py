@@ -2,16 +2,23 @@ import tensorflow as tf
 import pandas as pd
 import numpy as np
 
-df = pd.read_csv("F:/work projects/living_spaces_projects/presenting/TimeSeriesData/train_dataset.csv")
+df = pd.read_csv("FILENAME.csv")
 
-
+#Data Shape is (14, 731)
+"""
+    For Time Series, first 671 data point is used for Training and last 30 data point is taken
+    as target.
+    
+    Problem Statement: 
+        Predicting Store Traffic for 30 days.
+"""
 COLUMN_NAMES = df.columns
-INPUT_COLUMN_NAMES = list(df.columns)[:671]
+INPUT_COLUMN_NAMES = list(df.columns)[:671] #change the index range according to your data
 OUTPUT_COLUMN_NAMES = list(df.columns)[671:]
-pred_steps = 30
+pred_steps = 30 #days you want the prediction
 total_len_inp_features = len(COLUMN_NAMES) - pred_steps
 
-CSV_TYPE = [[0.0]] * len(INPUT_COLUMN_NAMES) + [[0.0]] * len(OUTPUT_COLUMN_NAMES)
+CSV_TYPE = [[0.0]] * len(INPUT_COLUMN_NAMES) + [[0.0]] * len(OUTPUT_COLUMN_NAMES) #all data points as float
 
 def _parse_line(line):
     
@@ -28,9 +35,10 @@ def _parse_line(line):
 
     return {'raw_data': inputs}, label
 
+#convert csv_file into Tensors
 def csv_input_fn(csv_path, batch_size):
     
-    dataset = tf.data.TextLineDataset(csv_path)
+    dataset = tf.data.TextLineDataset(csv_path).skip(1) #skip the first line in the csv_file
     #parse each line
     dataset = dataset.map(_parse_line)
     #shuffle, repeat, and batch the example
@@ -38,6 +46,7 @@ def csv_input_fn(csv_path, batch_size):
 
     return dataset
 
+#reading the dataset and converting into tensors
 def read_dataset(filename, batch_size):
     
     input_filename = tf.train.match_filenames_once(filename)
@@ -60,9 +69,6 @@ def read_dataset(filename, batch_size):
     return {'raw-data': inputs}, label
 
 
-tfrecords = read_dataset('F:/work projects/living_spaces_projects/presenting/TimeSeriesData/train_dataset.csv', 4)
-
-print("Data Passed as Tensor Format")
-print("-" * 100)
-print(tfrecords)
+#converted Time Series data into TF records to train a Simple Conv1D Model
+tfrecords = read_dataset('FILENAME.csv', 4)
 
