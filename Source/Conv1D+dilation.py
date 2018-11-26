@@ -13,12 +13,20 @@ filter_width = 2
 dilation_rates = [2 ** i for i in range(8)]
 pred_steps = 30
 
-filepath = 'F:/work projects/living_spaces_projects/presenting/TimeSeriesData/'
+filepath = '<path_to_the_timeseries_data>'
 orig_df = pd.read_csv(filepath + 'train_dataset.csv')
 
-model_path= 'F:/work projects/living_spaces_projects/presenting/TensorflowModel'
+model_path= '<model_dir_to_save_estimator_model>'
 
 COLUMN_NAMES = orig_df.columns 
+
+"""
+ Dataset shape: (13, 731)
+ Time series format.
+ This code is inspired from this tutorial: https://github.com/JEddy92/TimeSeries_Seq2Seq/blob/master/notebooks/TS_Seq2Seq_Conv_Intro.ipynb
+ 
+ The above code is written in keras. I took the NN architecture and builting as an Custom Estimator API.
+"""
 
 INPUT_COLUMN_NAMES = list(orig_df.columns)[:701]
 OUTPUT_COLUMN_NAMES = list(orig_df.columns)[701:]
@@ -198,7 +206,7 @@ train_filename= 'train_dataset.csv'
 eval_filename= 'eval_dataset.csv'
 test_filename= 'test_dataset.csv'
 
-#creaate an estimator wrapper
+#create an estimator wrapper
 estimator= tf.estimator.Estimator(
 	model_fn= cnn_model_fn,
 	model_dir= model_path)
